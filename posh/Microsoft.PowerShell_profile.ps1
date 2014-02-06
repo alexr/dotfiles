@@ -186,8 +186,13 @@ function Enable-Console-Dejavu {
     if($AlreadyInstalled) {
         Write-Host "$FontName already enabled." -ForegroundColor Yellow
     } else {
-        $x = New-ItemProperty $RegistryItemPath -Name $PropertyName -PropertyType String -Value $FontName
-        Write-Host "$FontName has been enabled." -ForegroundColor Green
+        try {
+            $x = New-ItemProperty $RegistryItemPath -Name $PropertyName -PropertyType String -Value $FontName -ErrorAction Stop
+            Write-Host "$FontName has been enabled." -ForegroundColor Green
+        } catch [System.Security.SecurityException] {
+            Write-Host "Oops. Permission denied." -ForegroundColor Red
+            Write-Host "This function modifies registry. Run from admin posh or permanently enable with 'Set-ExecutionPolicy unrestricted' from admin posh." -ForegroundColor Red
+        }
     }
 }
 
@@ -196,13 +201,13 @@ function Enable-Console-Dejavu {
 #############################################################
 # Setup java
 # as described in http://cs.markusweimer.com/2013/08/02/how-to-setup-powershell-for-github-maven-and-java-development/
-if(Test-Path $env:JAVA_HOME) {
+if(Test-Path Env:\JAVA_HOME) {
     Set-Alias javac $env:JAVA_HOME\bin\javac.exe
     Set-Alias java $env:JAVA_HOME\bin\java.exe
     Set-Alias jar $env:JAVA_HOME\bin\jar.exe
 }
 # Setup maven
-if(Test-Path $env:M2_HOME) {
+if(Test-Path Env:\M2_HOME) {
     function mvn-mt{
             $cmd = "$env:M2_HOME\bin\mvn.bat -TC1 $args"
             Invoke-Expression($cmd)        
@@ -257,3 +262,6 @@ function global:prompt {
     $global:LASTEXITCODE = $realLASTEXITCODE
     return "> "
 }
+
+. "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\posz.ps1"
+
