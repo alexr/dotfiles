@@ -1,4 +1,3 @@
-
 ## Using git subtree to manage components tracked in their own repositories.
 
 `posz` and `posh-tf` are different repositories added here via git subtree.
@@ -15,16 +14,16 @@ Adding `alexr/posz` repo as a subtree at `dotfiles/posz`.
 
 2. Add it as a subtree:
 
-```
-git subtree add --prefix posh/posz alexr-posz master --squash 
-```
+    ```
+    git subtree add --prefix posh/posz alexr-posz master --squash 
+    ```
 
 3. Fetch repo from remote and pull it into the subtree folder.
 
-```
-git fetch alexr-posz master
-git subtree pull --prefix posh/posz alexr-posz master --squash
-```
+    ```
+    git fetch alexr-posz master
+    git subtree pull --prefix posh/posz alexr-posz master --squash
+    ```
 
 Same for `alexr/posh-tf`.
 
