@@ -2,6 +2,7 @@
 . "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\functions.ps1"
 
 # Load posz
+New-Variable zscoreFile -Value "$(Split-Path -Parent $profile)\zscores.csv" -Force
 . "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\posz\posz.ps1"
 
 
