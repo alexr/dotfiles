@@ -49,6 +49,14 @@ function Get-AncestorItem {
     return $null
 }
 
+# http://stackoverflow.com/questions/63805/equivalent-of-nix-which-command-in-powershell
+function which([string]$name)
+{
+    if($name) {
+        Get-Command $name -CommandType Application -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty Definition
+    }
+}
 
 
 # Print all the console colors with names.
