@@ -96,12 +96,17 @@ Set-Alias ..   Push-Parent
 Set-Alias ...  Push-GrandParent
 Set-Alias .... Push-GreatGrandParent
 Set-Alias \\   Push-ContextRoot
-
+Set-Alias whereis $(Join-Path $env:SystemRoot '\System32\where.exe')
 
 function f($search, $path) { findstr /snip $search $path }
 function fs($search, $path) { findstr /snip /c:$search $path }
 function tfstat($itemspec=".\*") { & tf status $itemspec /r }
 
+#############################################################
+# Ensure needed path's are indeed part of the path variable
+#$pth = $(type Env:\path).Split(';') | Group-Object | Select-Object Name
+#if ($pth -ncontains '') ???? how to add proper paths reliably across environments and machines ???
+#Set-Item Env:\Path "$([string]::Join(';', $x.Name))"
 
 #############################################################
 # Setup java
