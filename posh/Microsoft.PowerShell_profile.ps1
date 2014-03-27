@@ -142,6 +142,8 @@ if(Test-Path ~\AppData\Local\GitHub) {
 
     Set-Location "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\posh-tf"
     Import-Module .\posh-tf
+    # source CheckVersion.ps1 to create tf alias, since aliases don't export from ps modules
+    . (".\CheckVersion.ps1")
 
     Pop-Location
 
