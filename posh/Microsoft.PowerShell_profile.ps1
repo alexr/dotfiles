@@ -64,10 +64,15 @@ function Start-Codebox {
         $saved_INETROOT = (Get-Item Env:\INETROOT).Value
     }
     $x = New-Item Env:\INETROOT -Value $Root -Force
+
+    $saved_WINDOW_TITLE = $Host.UI.RawUI.WindowTitle
+    $Host.UI.RawUI.WindowTitle = "CodeBox - $(Split-Path $Root -Leaf)"
     
     Push-Location $Root
     cmd.exe /c ".\CodeBox\Tools\runme-tfs.cmd&powershell.exe -NoExit -NoLogo"
     Pop-Location
+
+    $Host.UI.RawUI.WindowTitle = $saved_WINDOW_TITLE
 
     if ($saved_CODEBOXPROJECT -ne $null) {
         Set-Item Env:\CODEBOXPROJECT $saved_CODEBOXPROJECT
