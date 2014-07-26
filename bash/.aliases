@@ -1,0 +1,7 @@
+
+alias la='ls -las'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias c=clear
+alias l='ls -ls'
+alias sbl=sublime

@@ -1,5 +1,7 @@
 # Alex's dotfiles
 
-The personalization that can be captured in text :)
+The personalization that can be captured in code :)
 
-Starting out with PowerShell...
+PowerShell stuff is under `posh`.
+
+Bash for OS X is under `bash`.
