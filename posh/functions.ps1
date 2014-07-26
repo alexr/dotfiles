@@ -68,6 +68,7 @@ function Test-Colors {
 
     for ($i=0; $i -lt $colors.Length; $i++) {
         Write-Host -BackgroundColor $colors[$i].Trim() '   ' -NoNewline
+        Write-Host -ForegroundColor $colors[$i].Trim() 'Col' -NoNewline
         Write-Host ' ' $colors[$i] -NoNewline
         if ($i%4 -eq 3) { Write-Host }
     }
@@ -102,8 +103,8 @@ function New-ZenburnPowerShell {
     # http://twinside.free.fr/dotProject/?p=125
     $colors = @(
         0x003f3f3f, 0x00af6464, 0x00008000, 0x00808000,
-        0x00232333, 0x00aa50aa, 0x0000dcdc, 0x00ccdcdc,
-        0x008080c0, 0x00ffafaf, 0x007f9f7f, 0x00d3d08c,
+        0x00232347, 0x00aa50aa, 0x0000dcdc, 0x00ccdcdc,
+        0x00808085, 0x00ffafaf, 0x007f9f7f, 0x00d3d08c,
         0x007071e3, 0x00c880c8, 0x00afdff0, 0x00ffffff
     )
     for ($i = 0; $i -lt $colors.Length; $i++) {
