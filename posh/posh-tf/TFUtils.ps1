@@ -20,6 +20,7 @@ function Get-TFStatus($tfDir = (Get-LocalOrParentPath '$tf')) {
             $status = @()
         }
 
+        $rolledBack = 0
         $changesAdded = 0
         $changesModified = 0
         $changesDeleted = 0
@@ -33,17 +34,19 @@ function Get-TFStatus($tfDir = (Get-LocalOrParentPath '$tf')) {
             dbg "Status: $_" $sw
             if($_) {
                 switch -regex ($_) {
-                    '.* edit .*' {
+                    '.* edit,* .*' {
                         if ($inChanges) { $changesModified += 1 } else { $detectedModified += 1 }
                     }
 
-                    '.* add .*' {
+                    '.* add,* .*' {
                         if ($inChanges) { $changesAdded += 1 } else { $detectedAdded += 1 }
                     }
 
-                    '.* delete .*' {
+                    '.* delete,* .*' {
                         if ($inChanges) { $changesDeleted += 1 } else { $detectedDeleted += 1 }
                     }
+
+                    '.* rollback .*' { $rolledBack += 1 }
 
                     '^Detected Changes:' { $inChanges = $false }
                 }
@@ -53,9 +56,10 @@ function Get-TFStatus($tfDir = (Get-LocalOrParentPath '$tf')) {
         dbg 'Building status object' $sw
         if ($changesAdded + $changesModified + $changesDeleted -gt 0) {
             $changes = New-Object PSObject |
-                Add-Member -PassThru NoteProperty Added    $changesAdded |
-                Add-Member -PassThru NoteProperty Modified $changesModified |
-                Add-Member -PassThru NoteProperty Deleted  $changesDeleted
+                Add-Member -PassThru NoteProperty Added      $changesAdded |
+                Add-Member -PassThru NoteProperty Modified   $changesModified |
+                Add-Member -PassThru NoteProperty Deleted    $changesDeleted |
+                Add-Member -PassThru NoteProperty Rollbacked $rolledBack
         }
         if ($detectedAdded + $detectedModified + $detectedDeleted -gt 0) {
             $detected = New-Object PSObject |
