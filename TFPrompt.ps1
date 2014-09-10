@@ -48,6 +48,9 @@ function Write-TFStatus($status) {
             if($s.ShowStatusWhenZero -or $status.Changes.Deleted) {
               Write-Prompt " -$($status.Changes.Deleted)" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
             }
+            if($s.ShowStatusWhenZero -or $status.Changes.Rollbacked) {
+              Write-Prompt " ^$($status.Changes.Rollbacked)" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
+            }
 
             if($status.HasDetected) {
                 Write-Prompt $s.DelimText -BackgroundColor $s.DelimBackgroundColor -ForegroundColor $s.DelimForegroundColor
