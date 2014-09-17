@@ -1,3 +1,25 @@
+## Setting up posh for the first time.
+
+Edit PowerShell profile (may need to create dirs along the path):
+
+```
+> notepad $profile
+```
+
+Add following line to the profile, where username is your Windows login:
+
+```
+. "C:\Users\username\Documents\Github\dotfiles\posh\Microsoft.PowerShell_profile.ps1"
+```
+
+Restart PowerShell.
+
+### Enabling 'DejaVu Sans Mono' for console window.
+
+First make sure to download [DejaVu](http://dejavu-fonts.org/wiki/Download) fonts, and install into `\Windows\Fonts`.
+Then from elevated posh window run `Enable-Console-Dejavu`.
+
+
 ## Using git subtree to manage components tracked in their own repositories.
 
 `posz` and `posh-tf` are different repositories added here via git subtree.
