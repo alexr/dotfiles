@@ -162,6 +162,10 @@ if(Test-Path ~\AppData\Local\GitHub) {
     git config --global color.status.changed "blue normal bold"
     git config --global color.status.added "green normal bold"
 
+    # Graphical history aliases
+    git config --global alias.l "log --graph --pretty='%C(black bold)%h%Creset -%C(yellow dim reverse)%d%Creset %s %C(cyan bold)[%an]%Creset %C(green bold)(%cr)%Creset' --abbrev-commit --date=relative"
+    git config --global alias.la "!git l --all"
+
     $global:TFPromptSettings.ChangesForegroundColor=[ConsoleColor]::Green
     $global:TFPromptSettings.DetectedForegroundColor=[ConsoleColor]::Blue
 }
