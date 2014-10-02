@@ -161,6 +161,10 @@ if(Test-Path ~\AppData\Local\GitHub) {
     git config --global color.status.untracked "blue normal dim"
     git config --global color.status.changed "blue normal bold"
     git config --global color.status.added "green normal bold"
+    git config --global color.diff.new "green bold"
+    git config --global color.diff.old "red bold"
+    git config --global color.diff.frag "cyan bold"
+    git config --global color.diff.whitespace "yellow reverse"
 
     # Graphical history aliases
     git config --global alias.l "log --graph --pretty='%C(black bold)%h%Creset -%C(yellow dim reverse)%d%Creset %s %C(cyan bold)[%an]%Creset %C(green bold)(%cr)%Creset' --abbrev-commit --date=relative"
