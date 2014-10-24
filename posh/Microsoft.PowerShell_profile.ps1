@@ -46,10 +46,6 @@ function Start-CBT {
 
     "Exited CBT."
 }
-function DPMain  { Start-CBT g:\VSTS\DPMain  }
-function DPMain2 { Start-CBT g:\VSTS\DPMain2 }
-function DPMain3 { Start-CBT g:\VSTS\DPMain3 }
-
 
 function Start-Codebox {
     param ( [Parameter(Mandatory)][string]$Root )
@@ -89,7 +85,6 @@ function Start-Codebox {
     
     "Exited Codebox."
 }
-function Trill { Start-Codebox g:\VSTS\Trill }
 
 #############################################################
 # Aliases
