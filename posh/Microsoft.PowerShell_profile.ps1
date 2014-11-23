@@ -174,6 +174,8 @@ if(Test-Path ~\AppData\Local\GitHub) {
 function global:prompt {
     $realLASTEXITCODE = $LASTEXITCODE
 
+    Write-Host $(Get-Date -Format "hh:mm:ss ") -ForegroundColor Cyan -nonewline
+
     # Reset color, which can be messed up by Enable-GitColors
     $Host.UI.RawUI.ForegroundColor = $GitPromptSettings.DefaultForegroundColor
 
