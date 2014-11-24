@@ -37,9 +37,11 @@ function Push-GreatGrandParent {
 # Returns closest path to the $ItemName or $null if not found.
 function Get-AncestorItem {
     param ( [Parameter(Mandatory)][string]$ItemName,
-            [ValidateSet('Leaf', 'Container', 'Any')]$ItemKind = 'Any')
+            [ValidateSet('Leaf', 'Container', 'Any')]$ItemKind = 'Any',
+            [string]$SearchPath = $pwd.Path)
 
-    $cur = $pwd.Path
+    $cur = (Resolve-Path $SearchPath).Path
+
     while($cur.Length -ne 0) {
         if(Test-Path $cur\$ItemName -PathType $ItemKind) {
             return $cur

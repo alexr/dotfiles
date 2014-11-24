@@ -25,7 +25,30 @@ function Push-ContextRoot {
 }
 
 function Start-CBT {
-    param ( [Parameter(Mandatory)][string]$Root )
+    param ( [string]$Path )
+
+    # Default path to current location
+    if (-not $Path) {
+        $Path = $Pwd.Path
+    } else {
+        $path2 = Resolve-Path $Path -ErrorAction SilentlyContinue
+        if ($path2 -eq $null) {
+            Write-Host "Error $Path is not valid!" -ForegroundColor Red
+            return
+        }
+        $Path = $path2
+    }
+
+    # Find real root if any
+    $Root = Get-AncestorItem -ItemName 'CBT' -ItemKind Container -SearchPath $Path
+    if($Root -eq $null) {
+        Write-Host "Error $Path is not CBT subtree!" -ForegroundColor Red
+        return
+    }
+
+    # Save original path to switch to it if under current location
+    $env:CbtStartupPath = $path
+    Write-Host "Make sure personal startup.ps1 contains line 'if (`$env:CbtStartupPath) { Set-Location `$env:CbtStartupPath }'."
 
     $saved_CBT_SHELL = $null
     if (Test-Path Env:\CBT_SHELL) {
@@ -36,6 +59,10 @@ function Start-CBT {
     Push-Location $Root
     & "_BuildCommon\Scripts\Startup.cmd"
     Pop-Location
+
+    if ($env:CbtStartupPath -ne $null) {
+        Remove-Item Env:\CbtStartupPath
+    }
 
     if ($saved_CBT_SHELL -ne $null) {
         Set-Item Env:\CBT_SHELL $saved_CBT_SHELL
