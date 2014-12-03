@@ -51,6 +51,46 @@ function Get-AncestorItem {
     return $null
 }
 
+# Looks up Visual Stdio instalation path.
+# Backward compatible up to VS 10.0 and future proof till VS 14.0.
+# Returns an object with `path` containing VS installation root
+# and `version` - latest installed VS version.
+function Get-LatestVisualStudio-InstallationPath {
+    function GetPath {
+        param ( [string]$reg )
+
+        $versions = @('14.0', '13.0', '12.0', '11.0', '10.0')
+
+        for ($i=0; $i -lt $versions.Length; $i++) {
+            $path = [Microsoft.Win32.Registry]::GetValue($reg + $versions[$i] + "\", "InstallDir", $null)
+            if ($path -ne $null) {
+                $res = New-Object psobject
+                $res | Add-Member -Name path -Type NoteProperty -Value $path
+                $res | Add-Member -Name version -Type NoteProperty -Value $versions[$i]
+                return $res
+            }
+        }
+        return $null
+    }
+
+    if ([Environment]::Is64BitOperatingSystem) {
+        return GetPath "HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\"
+    } else {
+        return GetPath "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\"
+    }
+}
+
+function Start-VisualStudioEnvironment {
+    param ( [string]$platform )
+    $vsinfo = Get-LatestVisualStudio-InstallationPath
+    if ($vsinfo) {
+        Write-Host "Starting $platform comand prompt for VS $($vsinfo.version)..."
+        & cmd /k "`"$($vsinfo.path)..\..\VC\vcvarsall.bat`" $platform"
+    } else {
+        Write-Host "No Visual Studio version installed."
+    }
+}
+
 # http://stackoverflow.com/questions/63805/equivalent-of-nix-which-command-in-powershell
 function which([string]$name)
 {

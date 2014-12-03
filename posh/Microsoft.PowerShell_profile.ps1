@@ -74,44 +74,6 @@ function Start-CBT {
     "Exited CBT."
 }
 
-function Start-Codebox {
-    param ( [Parameter(Mandatory)][string]$Root )
-
-    $saved_CODEBOXPROJECT = $null
-    if (Test-Path Env:\CODEBOXPROJECT) {
-        $saved_CODEBOXPROJECT = (Get-Item Env:\CODEBOXPROJECT).Value
-    }
-    $x = New-Item Env:\CODEBOXPROJECT -Value (Split-Path $Root -Leaf) -Force
-    $saved_INETROOT = $null
-    if (Test-Path Env:\INETROOT) {
-        $saved_INETROOT = (Get-Item Env:\INETROOT).Value
-    }
-    $x = New-Item Env:\INETROOT -Value $Root -Force
-
-    $saved_WINDOW_TITLE = $Host.UI.RawUI.WindowTitle
-    $Host.UI.RawUI.WindowTitle = "CodeBox - $(Split-Path $Root -Leaf)"
-    
-    Push-Location $Root
-    cmd.exe /c ".\CodeBox\Tools\runme-tfs.cmd&powershell.exe -NoExit -NoLogo"
-    Pop-Location
-
-    $Host.UI.RawUI.WindowTitle = $saved_WINDOW_TITLE
-
-    if ($saved_CODEBOXPROJECT -ne $null) {
-        Set-Item Env:\CODEBOXPROJECT $saved_CODEBOXPROJECT
-    } else {
-        Remove-Item Env:\CODEBOXPROJECT
-    }
-    Remove-Item Env:\saved_CODEBOXPROJECT -ErrorAction Ignore
-    if ($saved_INETROOT -ne $null) {
-        Set-Item Env:\INETROOT $saved_INETROOT
-    } else {
-        Remove-Item Env:\INETROOT
-    }
-    Remove-Item Env:\saved_INETROOT -ErrorAction Ignore
-    
-    "Exited Codebox."
-}
 
 #############################################################
 # Aliases
@@ -128,6 +90,8 @@ Set-Alias whereis $(Join-Path $env:SystemRoot '\System32\where.exe')
 function f($search, $path) { findstr /snip $search $path }
 function fs($search, $path) { findstr /snip /c:$search $path }
 function tfstat($itemspec=".\*") { & tf status $itemspec /r }
+function cmdvs32 { Start-VisualStudioEnvironment x86 }
+function cmdvs64 { Start-VisualStudioEnvironment x64 }
 
 #############################################################
 # Ensure needed path's are indeed part of the path variable
