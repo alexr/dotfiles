@@ -85,7 +85,13 @@ function Start-VisualStudioEnvironment {
     $vsinfo = Get-LatestVisualStudio-InstallationPath
     if ($vsinfo) {
         Write-Host "Starting $platform comand prompt for VS $($vsinfo.version)..."
+
+        $saved_VS_ENV_TITLE = $Host.UI.RawUI.WindowTitle
+        $Host.UI.RawUI.WindowTitle = "Visual Studio Cmd - $platform"
+
         & cmd /k "`"$($vsinfo.path)..\..\VC\vcvarsall.bat`" $platform"
+
+        $Host.UI.RawUI.WindowTitle = $saved_VS_ENV_TITLE
     } else {
         Write-Host "No Visual Studio version installed."
     }
