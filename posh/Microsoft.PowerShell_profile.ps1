@@ -74,6 +74,17 @@ function Start-CBT {
     "Exited CBT."
 }
 
+function tflog {
+    tf history .\* -r -format:brief -noprompt -stopafter:20
+}
+
+function tfstat {
+    $tfstat = tf status | Where-Object {$_ -and $_.Substring(0, 1) -ne "`$"}
+    $col = $tfstat | Where-Object {$_ -and $_.Substring(0,1) -eq "-"} | Select-Object -First 1
+    $col = if ($col) {$col.Split(" ")[0].Length + 1} else {0}
+    $tfstat | Foreach-Object {if($_.Length -le $col) {$_} else {$_.Substring($col)}}
+}
+
 
 #############################################################
 # Aliases
@@ -81,15 +92,20 @@ Set-Alias l    Get-ChildItem
 Set-Alias np   $(Join-Path $env:SystemRoot '\System32\notepad.exe')
 Set-Alias subl $(Join-Path $env:ProgramFiles '\Sublime Text 2\sublime_text.exe')
 Set-Alias sbl subl
+
+# Have to use `pd` here to get these locations to flow through posz.
+function Push-Parent { $location = Get-Parent; if ($location) { pd $location } }
+function Push-GrandParent { $location = Get-GrandParent; if ($location) { pd $location } }
+function Push-GrandGrandParent { $location = Get-GrandGrandParent; if ($location) { pd $location } }
 Set-Alias ..   Push-Parent
 Set-Alias ...  Push-GrandParent
 Set-Alias .... Push-GreatGrandParent
+
 Set-Alias \\   Push-ContextRoot
 Set-Alias whereis $(Join-Path $env:SystemRoot '\System32\where.exe')
 
 function f($search, $path) { findstr /snip $search $path }
 function fs($search, $path) { findstr /snip /c:$search $path }
-function tfstat($itemspec=".\*") { & tf status $itemspec /r }
 function cmdvs32 { Start-VisualStudioEnvironment x86 }
 function cmdvs64 { Start-VisualStudioEnvironment x64 }
 

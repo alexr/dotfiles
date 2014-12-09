@@ -1,35 +1,36 @@
 #############################################################
 # New functions
 
-# Pushes parent location (i.e. '..') if exists
-function Push-Parent {
+# Returns parent location (i.e. '..') if exists
+function Get-Parent {
     $Location = Split-Path $pwd
-    if($Location.Length -ne 0) { Push-Location $Location }
+    if($Location.Length -ne 0) { return $Location }
+    else { return $null }
 }
 
-# Pushes grandparent location (i.e. '../..') or,
+# Returns grandparent location (i.e. '../..') or,
 # if not exists then the parent if exists
-function Push-GrandParent {
+function Get-GrandParent {
     $Location1 = Split-Path $pwd
     if($Location1.Length -ne 0) {
         $Location2 = Split-Path $Location1
-        if($Location2.Length -ne 0) { Push-Location $Location2 }
-        else                        { Push-Location $Location1 }
-    }
+        if($Location2.Length -ne 0) { return $Location2 }
+        else                        { return $Location1 }
+    } else { return $null }
 }
 
-# Pushes greatgrandparent, if not exists then grandparent, and
+# Returns greatgrandparent, if not exists then grandparent, and
 # finaly parent, whichever exists 
-function Push-GreatGrandParent {
+function Get-GreatGrandParent {
     $Location1 = Split-Path $pwd
     if($Location1.Length -ne 0) {
         $Location2 = Split-Path $Location1
         if($Location2.Length -ne 0) {
             $Location3 = Split-Path $Location2
-            if($Location3.Length -ne 0) { Push-Location $Location3 }
-            else                        { Push-Location $Location2 }
-        } else                          { Push-Location $Location1 }
-    }
+            if($Location3.Length -ne 0) { return $Location3 }
+            else                        { return $Location2 }
+        } else                          { return $Location1 }
+    } else { return $null }
 }
 
 # Looks upwards in the current path ($pwd) to find item named $ItemName,
@@ -56,27 +57,16 @@ function Get-AncestorItem {
 # Returns an object with `path` containing VS installation root
 # and `version` - latest installed VS version.
 function Get-LatestVisualStudio-InstallationPath {
-    function GetPath {
-        param ( [string]$reg )
+    $regPath = "HKLM:SOFTWARE$(if([Environment]::Is64BitOperatingSystem) { '\Wow6432Node' })\Microsoft\VisualStudio\1*.0"
+    $reg = Get-ChildItem $regPath | Sort-Object Name -desc | Select-Object -First 1
 
-        $versions = @('14.0', '13.0', '12.0', '11.0', '10.0')
-
-        for ($i=0; $i -lt $versions.Length; $i++) {
-            $path = [Microsoft.Win32.Registry]::GetValue($reg + $versions[$i] + "\", "InstallDir", $null)
-            if ($path -ne $null) {
-                $res = New-Object psobject
-                $res | Add-Member -Name path -Type NoteProperty -Value $path
-                $res | Add-Member -Name version -Type NoteProperty -Value $versions[$i]
-                return $res
-            }
-        }
-        return $null
-    }
-
-    if ([Environment]::Is64BitOperatingSystem) {
-        return GetPath "HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\"
+    if ($reg) {
+        $res = New-Object psobject
+        $res | Add-Member -Name version -Type NoteProperty -Value $reg.PSChildName
+        $res | Add-Member -Name path -Type NoteProperty -Value ($reg | Get-ItemProperty | Select-Object -Exp "InstallDir")
+        return $res
     } else {
-        return GetPath "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\"
+        return $null
     }
 }
 
