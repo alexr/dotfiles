@@ -92,6 +92,7 @@ Set-Alias l    Get-ChildItem
 Set-Alias np   $(Join-Path $env:SystemRoot '\System32\notepad.exe')
 Set-Alias subl $(Join-Path $env:ProgramFiles '\Sublime Text 2\sublime_text.exe')
 Set-Alias sbl subl
+Set-Alias sudo "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\sudo.ps1"
 
 # Have to use `pd` here to get these locations to flow through posz.
 function Push-Parent { $location = Get-Parent; if ($location) { pd $location } }

@@ -87,6 +87,23 @@ function Start-VisualStudioEnvironment {
     }
 }
 
+# A hack to monitor and kill bitlocker popup };^)
+function Block-Bitlocker {
+  while ($true)
+  {
+    $x = Get-Process -Name MBAMClientUI -ErrorAction SilentlyContinue | `
+           Select-Object -ExpandProperty Id -ErrorAction SilentlyContinue
+    if ($x) {
+      Stop-process -Id $x -ErrorAction SilentlyContinue
+      Write-Host X -NoNewLine -ForegroundColor Red
+      Start-Sleep -Milliseconds 100
+    } else {
+      Write-Host . -NoNewLine -ForegroundColor Green
+      Start-Sleep 10
+    }
+  }
+}
+
 # http://stackoverflow.com/questions/63805/equivalent-of-nix-which-command-in-powershell
 function which([string]$name)
 {
