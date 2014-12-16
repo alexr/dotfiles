@@ -1,8 +1,7 @@
 function script:TFCommands($filter, $includeAliases) {
-    tf | where { $_ -match '^tf (\w+)' } |
-        foreach { $Matches[1] } |
-        where { $_ -like "$filter*" } |
-        sort
+    # Need to add 'edit' command manually, since tf.exe forgets to mention it's existance.
+    $x = (tf | where { $_ -match '^tf (\w+)' } | foreach { $Matches[1] }) + 'edit'
+    $x | where { $_ -like "$filter*" } | sort
 }
 
 function TFTabExpansion($lastBlock) {

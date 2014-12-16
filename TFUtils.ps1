@@ -12,7 +12,11 @@ function Get-TFStatus($tfDir = (Get-LocalOrParentPath '$tf')) {
         if($settings.EnableFileStatus) {
             dbg 'Getting status' $sw
             try {
-                $status = tf status 2>$null
+                # Unfortunately when TFS server is not available or you are offline,
+                # "tf status" can hang for untolarable time and requires ^C to get your prompt back.
+                # Here is quick and dirty solution to run "tf status" as timed process with 500ms timeout.
+                # More than 500ms to get an answer and it's killed.
+                $status = ([RunHelperClass]::RunTimed("tf", "status", $pwd.path, 500)).Split("`r`n")
             } catch {
                 $status = @()
             }
@@ -28,12 +32,17 @@ function Get-TFStatus($tfDir = (Get-LocalOrParentPath '$tf')) {
         $detectedModified = 0
         $detectedDeleted = 0
         $inChanges = $true
+        $error = $false
 
         dbg 'Parsing status' $sw
         $status | ForEach-Object {
             dbg "Status: $_" $sw
             if($_) {
                 switch -regex ($_) {
+		    # [RunHelperClass]::RunTimed returns 'FAILED' when process is killed.
+                    'FAILED' {
+                        $error = $true
+                    }
                     '.* edit,* .*' {
                         if ($inChanges) { $changesModified += 1 } else { $detectedModified += 1 }
                     }
@@ -73,6 +82,7 @@ function Get-TFStatus($tfDir = (Get-LocalOrParentPath '$tf')) {
             Changes         = $changes
             HasDetected     = [bool]$detected
             Detected        = $detected
+            HasError        = $error
         }
 
         dbg 'Finished' $sw
