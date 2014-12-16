@@ -38,34 +38,38 @@ function Write-TFStatus($status) {
     if ($status -and $s) {
         Write-Prompt $s.BeforeText -BackgroundColor $s.BeforeBackgroundColor -ForegroundColor $s.BeforeForegroundColor
 
-        if($s.EnableFileStatus -and $status.HasChanges) {
-            if($s.ShowStatusWhenZero -or $status.Changes.Added) {
-              Write-Prompt "+$($status.Changes.Added)" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
-            }
-            if($s.ShowStatusWhenZero -or $status.Changes.Modified) {
-              Write-Prompt " ~$($status.Changes.Modified)" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
-            }
-            if($s.ShowStatusWhenZero -or $status.Changes.Deleted) {
-              Write-Prompt " -$($status.Changes.Deleted)" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
-            }
-            if($s.ShowStatusWhenZero -or $status.Changes.Rollbacked) {
-              Write-Prompt " ^$($status.Changes.Rollbacked)" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
+        if($s.EnableFileStatus -and $status.HasError) {
+            Write-Prompt "+? ~? -? ^?" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
+        } else {
+            if($s.EnableFileStatus -and $status.HasChanges) {
+                if($s.ShowStatusWhenZero -or $status.Changes.Added) {
+                  Write-Prompt "+$($status.Changes.Added)" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
+                }
+                if($s.ShowStatusWhenZero -or $status.Changes.Modified) {
+                  Write-Prompt " ~$($status.Changes.Modified)" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
+                }
+                if($s.ShowStatusWhenZero -or $status.Changes.Deleted) {
+                  Write-Prompt " -$($status.Changes.Deleted)" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
+                }
+                if($s.ShowStatusWhenZero -or $status.Changes.Rollbacked) {
+                  Write-Prompt " ^$($status.Changes.Rollbacked)" -BackgroundColor $s.ChangesBackgroundColor -ForegroundColor $s.ChangesForegroundColor
+                }
+
+                if($status.HasDetected) {
+                    Write-Prompt $s.DelimText -BackgroundColor $s.DelimBackgroundColor -ForegroundColor $s.DelimForegroundColor
+                }
             }
 
-            if($status.HasDetected) {
-                Write-Prompt $s.DelimText -BackgroundColor $s.DelimBackgroundColor -ForegroundColor $s.DelimForegroundColor
-            }
-        }
-
-        if($s.EnableFileStatus -and $status.HasDetected) {
-            if($s.ShowStatusWhenZero -or $status.Detected.Added) {
-              Write-Prompt " +$($status.Detected.Added)" -BackgroundColor $s.DetectedBackgroundColor -ForegroundColor $s.DetectedForegroundColor
-            }
-            if($s.ShowStatusWhenZero -or $status.Detected.Modified) {
-              Write-Prompt " ~$($status.Detected.Modified)" -BackgroundColor $s.DetectedBackgroundColor -ForegroundColor $s.DetectedForegroundColor
-            }
-            if($s.ShowStatusWhenZero -or $status.Detected.Deleted) {
-              Write-Prompt " -$($status.Detected.Deleted)" -BackgroundColor $s.DetectedBackgroundColor -ForegroundColor $s.DetectedForegroundColor
+            if($s.EnableFileStatus -and $status.HasDetected) {
+                if($s.ShowStatusWhenZero -or $status.Detected.Added) {
+                  Write-Prompt " +$($status.Detected.Added)" -BackgroundColor $s.DetectedBackgroundColor -ForegroundColor $s.DetectedForegroundColor
+                }
+                if($s.ShowStatusWhenZero -or $status.Detected.Modified) {
+                  Write-Prompt " ~$($status.Detected.Modified)" -BackgroundColor $s.DetectedBackgroundColor -ForegroundColor $s.DetectedForegroundColor
+                }
+                if($s.ShowStatusWhenZero -or $status.Detected.Deleted) {
+                  Write-Prompt " -$($status.Detected.Deleted)" -BackgroundColor $s.DetectedBackgroundColor -ForegroundColor $s.DetectedForegroundColor
+                }
             }
         }
 
