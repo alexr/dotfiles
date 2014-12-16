@@ -79,7 +79,13 @@ function tflog {
 }
 
 function tfstat {
-    $tfstat = tf status | Where-Object {$_ -and $_.Substring(0, 1) -ne "`$"}
+    param ( [switch]$a )
+
+    if ($a) {
+        $tfstat = tf status | Where-Object {$_ -and $_.Substring(0, 1) -ne "`$"}
+    } else {
+        $tfstat = tf status -r . | Where-Object {$_ -and $_.Substring(0, 1) -ne "`$"}
+    }
     $col = $tfstat | Where-Object {$_ -and $_.Substring(0,1) -eq "-"} | Select-Object -First 1
     $col = if ($col) {$col.Split(" ")[0].Length + 1} else {0}
     $tfstat | Foreach-Object {if($_.Length -le $col) {$_} else {$_.Substring($col)}}
@@ -97,7 +103,7 @@ Set-Alias sudo "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\sudo.ps1"
 # Have to use `pd` here to get these locations to flow through posz.
 function Push-Parent { $location = Get-Parent; if ($location) { pd $location } }
 function Push-GrandParent { $location = Get-GrandParent; if ($location) { pd $location } }
-function Push-GrandGrandParent { $location = Get-GrandGrandParent; if ($location) { pd $location } }
+function Push-GreatGrandParent { $location = Get-GreatGrandParent; if ($location) { pd $location } }
 Set-Alias ..   Push-Parent
 Set-Alias ...  Push-GrandParent
 Set-Alias .... Push-GreatGrandParent
