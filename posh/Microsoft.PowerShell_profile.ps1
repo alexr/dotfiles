@@ -91,6 +91,16 @@ function tfstat {
     $tfstat | Foreach-Object {if($_.Length -le $col) {$_} else {$_.Substring($col)}}
 }
 
+function tfdiff {
+    param ( $itemspec = "" )
+
+    $tempFile = [System.IO.Path]::GetTempFileName()
+    Rename-Item "$tempFile" "$tempFile.diff"
+    $tempFile = $tempFile + ".diff"
+    $x = tf diff /noprompt > $tempFile
+
+    & $(Join-Path $env:ProgramFiles '\Sublime Text 2\sublime_text.exe') "$tempFile"
+}
 
 #############################################################
 # Aliases

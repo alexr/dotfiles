@@ -16,7 +16,7 @@ function Get-TFStatus($tfDir = (Get-LocalOrParentPath '$tf')) {
                 # "tf status" can hang for untolarable time and requires ^C to get your prompt back.
                 # Here is quick and dirty solution to run "tf status" as timed process with 500ms timeout.
                 # More than 500ms to get an answer and it's killed.
-                $status = ([RunHelperClass]::RunTimed("tf", "status", $pwd.path, 500)).Split("`r`n")
+                $status = ([RunHelperClass]::RunTimed("tf", "status", $pwd.path, 900)).Split("`r`n")
             } catch {
                 $status = @()
             }
