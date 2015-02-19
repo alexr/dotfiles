@@ -87,6 +87,24 @@ function Start-VisualStudioEnvironment {
     }
 }
 
+# Basic du -s, slightly fixed, based on:
+#     http://stackoverflow.com/questions/868264/du-in-powershell
+# TODO:
+# - Add (-c) produce grand total
+# - Add (-s) display only a total for each argument
+# - Add (-h) print sizes in human readable format (e.g., 1K 234M 2G 5T)
+# - Add (#), where # is a number of levels to descend to compute sizes
+function directory-summary {
+    param ( [string]$dir = "." )
+    Get-ChildItem $dir -ErrorAction SilentlyContinue |
+        % { $f = $_ ;
+            Get-ChildItem -r $_.FullName -ErrorAction SilentlyContinue |
+            Where-Object -Property Length |
+            Measure-Object -Property Length -Sum |
+            Select-Object @{Name="Name";Expression={$f}}, Sum }
+}
+
+
 # A hack to monitor and kill bitlocker popup };^)
 function Block-Bitlocker {
   while ($true)
