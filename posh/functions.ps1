@@ -105,21 +105,36 @@ function directory-summary {
 }
 
 
-# A hack to monitor and kill bitlocker popup };^)
+# A hack to kill bitlocker popup };^)
+# -m will monitor bitlocker UI in a loop.
 function Block-Bitlocker {
-  while ($true)
-  {
-    $x = Get-Process -Name MBAMClientUI -ErrorAction SilentlyContinue | `
-           Select-Object -ExpandProperty Id -ErrorAction SilentlyContinue
-    if ($x) {
-      Stop-process -Id $x -ErrorAction SilentlyContinue
-      Write-Host X -NoNewLine -ForegroundColor Red
-      Start-Sleep -Milliseconds 100
-    } else {
-      Write-Host . -NoNewLine -ForegroundColor Green
-      Start-Sleep 10
+    param ( [switch]$m )
+
+    function MaybeKillUI() {
+        $x = Get-Process -Name MBAMClientUI -ErrorAction SilentlyContinue | `
+               Select-Object -ExpandProperty Id -ErrorAction SilentlyContinue
+        if ($x) {
+          Stop-process -Id $x -ErrorAction SilentlyContinue
+          Write-Host X -NoNewLine -ForegroundColor Red
+          return $true
+        } else {
+          Write-Host . -NoNewLine -ForegroundColor Green
+          return $false
+        }
     }
-  }
+
+    if ($m) {
+        while ($true) {
+            $res = (MaybeKillUI)
+            if ($res) {
+                Start-Sleep -Milliseconds 100
+            } else {
+                Start-Sleep 10
+            }
+        }
+    } else {
+        $res = (MaybeKillUI)
+    }
 }
 
 # http://stackoverflow.com/questions/63805/equivalent-of-nix-which-command-in-powershell
