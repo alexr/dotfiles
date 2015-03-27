@@ -75,7 +75,8 @@ function Start-CBT {
 }
 
 function tflog {
-    tf history .\* -r -format:brief -noprompt -stopafter:20
+    param ( [int]$n = 20 )
+    tf history .\* -r -format:brief -noprompt -stopafter:$n
 }
 
 function tfstat {
