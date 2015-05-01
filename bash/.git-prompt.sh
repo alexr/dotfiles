@@ -33,50 +33,6 @@
 # in a git repository.  The %s token will be the name of the current
 # branch.
 #
-# CONFIG OPTIONS
-# ==============
-#
-# If you would like to remove the prompt information for a particular
-# repository (i.e. for a large repository) set bash.enableGitStatus to
-# false in the local git config. Alternately, if the key bash.enableFileStatus
-# is set to false, then index and working tree information will be suppressed,
-# but current branch information will still be shown.
-#
-# You can also see if currently something is stashed, by setting
-# GIT_PS1_SHOWSTASHSTATE to a nonempty value. If something is stashed,
-# then a '$' will be shown next to the branch name.
-#
-# If you would like to see the difference between HEAD and its upstream,
-# set GIT_PS1_SHOWUPSTREAM="auto".  A "<" indicates you are behind, ">"
-# indicates you are ahead, "<>" indicates you have diverged and "="
-# indicates that there is no difference. You can further control
-# behaviour by setting GIT_PS1_SHOWUPSTREAM to a space-separated list
-# of values:
-#
-#     verbose       show number of commits ahead/behind (+/-) upstream
-#     legacy        don't use the '--count' option available in recent
-#                   versions of git-rev-list
-#     git           always compare HEAD to @{upstream}
-#     svn           always compare HEAD to your SVN upstream
-#
-# By default, __git_ps1 will compare HEAD to your SVN upstream if it can
-# find one, or @{upstream} otherwise.  Once you have set
-# GIT_PS1_SHOWUPSTREAM, you can override it on a per-repository basis by
-# setting the bash.showUpstream config variable.
-#
-# If you would like to see more information about the identity of
-# commits checked out as a is_detached HEAD, set GIT_PS1_DESCRIBE_STYLE
-# to one of these values:
-#
-#     contains      relative to newer annotated tag (v1.6.3.2~35)
-#     branch        relative to newer tag or branch (master~4)
-#     describe      relative to older annotated tag (v1.6.3.1-13-gdd42c2f)
-#     default       exactly matching tag
-#
-# If you would like a colored hint about the current dirty state, set
-# GIT_PS1_SHOWCOLORHINTS to a nonempty value. The colors are based on
-# the colored output of "git status -sb".
-
 # __gitdir accepts 0 or 1 arguments (i.e., location)
 # returns location of .git repo
 # __git_ps1 accepts 0 or 1 arguments (i.e., format string)
@@ -89,50 +45,126 @@
 # to the state string when assigned to PS1.
 # The optional third parameter will be used as printf format string to further
 # customize the output of the git-status string.
-# In this mode you can request colored hints using GIT_PS1_SHOWCOLORHINTS=true
+#
+# CONFIG OPTIONS
+# ==============
+#
+# This script should work out of the box. Available options are set through
+# your git configuration files. This allows you to control the prompt display on a
+# per-repository basis. These files are most likely called `.gitconfig`; an 
+# example illustrating the syntax of these files can be found at
+# http://git-scm.com/docs/git-config#_example.
+# ```
+# bash.describeStyle
+# bash.enableFileStatus
+# bash.enableGitStatus
+# bash.showStatusWhenZero
+# bash.showUpstream
+# ```
+#
+# bash.describeStyle
+# ------------------
+#
+# This option controls if you would like to see more information about the
+# identity of commits checked out as a detached `HEAD`. This is also controlled
+# by the legacy environment variable `GIT_PS1_DESCRIBESTYLE`.
+#
+# Option   | Description
+# -------- | -----------
+# contains | relative to newer annotated tag `(v1.6.3.2~35)`
+# branch   | relative to newer tag or branch `(master~4)`
+# describe | relative to older annotated tag `(v1.6.3.1-13-gdd42c2f)`
+# default  | exactly matching tag
+#
+# bash.enableFileStatus
+# ---------------------
+#
+# Option | Description
+# ------ | -----------
+# true   | _Default_. The script will query for all file indicators every time.
+# false  | No file indicators will be displayed. The script will not query
+#          upstream for differences. Branch color-coding information is still
+#          displayed.
+#
+# bash.enableGitStatus
+# --------------------
+#
+# Option | Description
+# ------ | -----------
+# true   | _Default_. Color coding and indicators will be shown.
+# false  | The script will not run.
+#
+# bash.showStashState
+# -------------------
+#
+# Option | Description
+# ------ | -----------
+# true   | _Default_. An indicator will display if the stash is not empty.
+# false  | An indicator will not display the stash status.
+#
+# bash.showStatusWhenZero
+# -----------------------
+#
+# Option | Description
+# ------ | -----------
+# true   | Indicators will be shown even if there are no updates to the index or
+#          working tree.
+# false  | _Default_. No file change indicators will be shown if there are no
+#          changes to the index or working tree.
+#
+# bash.showUpstream
+# -----------------
+#
+# By default, `__git_ps1` will compare `HEAD` to your `SVN` upstream if it can
+# find one, or `@{upstream}` otherwise. This is also controlled by the legacy
+# environment variable `GIT_PS1_SHOWUPSTREAM`.
+#
+# Option | Description
+# ------ | -----------
+# legacy | Does not use the `--count` option available in recent versions of
+#          `git-rev-list`
+# git    | _Default_. Always compares `HEAD` to `@{upstream}`
+# svn    | Always compares `HEAD` to `SVN` upstream
 __git_ps1 ()
 {
     if [ "$(git config --bool bash.enableGitStatus)" == "false" ]; then return; fi
 
-    local DefaultForegroundColor='\033[m' # Default no color
+    local DefaultForegroundColor='\e[m' # Default no color
     local DefaultBackgroundColor=
 
     local BeforeText=' ['
-    local BeforeForegroundColor='\033[1;33m' # Yellow
+    local BeforeForegroundColor='\e[1;33m' # Yellow
     local BeforeBackgroundColor=
     local DelimText=' |'
-    local DelimForegroundColor='\033[1;33m' # Yellow
+    local DelimForegroundColor='\e[1;33m' # Yellow
     local DelimBackgroundColor=
 
     local AfterText=']'
-    local AfterForegroundColor='\033[1;33m' # Yellow
+    local AfterForegroundColor='\e[1;33m' # Yellow
     local AfterBackgroundColor=
 
-    local BranchForegroundColor='\033[1;36m' # Cyan
+    local BranchForegroundColor='\e[1;36m' # Cyan
     local BranchBackgroundColor=
-    local BranchAheadForegroundColor='\033[1;32m' # Green
+    local BranchAheadForegroundColor='\e[1;32m' # Green
     local BranchAheadBackgroundColor=
-    local BranchBehindForegroundColor='\033[0;31m' # Red
+    local BranchBehindForegroundColor='\e[0;31m' # Red
     local BranchBehindBackgroundColor=
-    local BranchBehindAndAheadForegroundColor='\033[1;33m' # Yellow
+    local BranchBehindAndAheadForegroundColor='\e[1;33m' # Yellow
     local BranchBehindAndAheadBackgroundColor=
 
     local BeforeIndexText=""
-    local BeforeIndexForegroundColor='\033[1;32m' # Dark green
+    local BeforeIndexForegroundColor='\e[1;32m' #Dark green
     local BeforeIndexBackgroundColor=
 
-    local IndexForegroundColor='\033[1;32m' # Dark green
+    local IndexForegroundColor='\e[1;32m' # Dark green
     local IndexBackgroundColor=
 
-    local WorkingForegroundColor='\033[1;34m' # Blue  #WAS '\033[0;31m' # Dark red
+    local WorkingForegroundColor='\e[1;34m' # Blue  #WAS '\e[0;31m' # Dark red
     local WorkingBackgroundColor=
 
-    local UntrackedText=' !'
-    local UntrackedForegroundColor='\033[0;31m' # Dark red
-    local UntrackedBackgroundColor=
-
-    local StashForegroundColor='\033[0;34m' # Darker blue
+    local StashForegroundColor='\e[0;34m' # Darker blue
     local StashBackgroundColor=
+
 
     local EnableFileStatus=`git config --bool bash.enableFileStatus`
     case "$EnableFileStatus" in
@@ -153,11 +185,7 @@ __git_ps1 ()
         *)     ShowStashState=true ;;
     esac
 
-    local AutoRefreshIndex=true
-
-    local aheadBy_=$aheadBy
-    local behindBy_=$behindBy
-    aheadBy=0
+    aheadBy=0                   # these globals are updated by __git_ps1_showupstream
     behindBy=0
 
     local is_pcmode=false
@@ -225,8 +253,12 @@ __git_ps1 ()
 
         b="$(git symbolic-ref HEAD 2>/dev/null)" || {
             is_detached=true
+            local output="$(git config -z --get bash.describeStyle)"
+            if [ -n "$output" ]; then
+                GIT_PS1_DESCRIBESTYLE=$output
+            fi
             b="$(
-            case "${GIT_PS1_DESCRIBE_STYLE-}" in
+            case "${GIT_PS1_DESCRIBESTYLE-}" in
             (contains)
                 git describe --contains HEAD ;;
             (branch)
@@ -314,7 +346,7 @@ __git_ps1 ()
                     (( filesUnmerged++ ))
                     ;;
             esac
-        done <<< "`git status -s`"
+        done <<< "`git status --porcelain`"
     fi
 
     local gitstring=
@@ -323,11 +355,12 @@ __git_ps1 ()
     gitstring="\[$BeforeBackgroundColor\]\[$BeforeForegroundColor\]$BeforeText"
 
     # branch
-    if [ $behindBy -gt 0 ] && [ $aheadBy -gt 0 ]; then
+
+    if (( $behindBy > 0 && $aheadBy > 0 )); then
         gitstring+="\[$BranchBehindAndAheadBackgroundColor\]\[$BranchBehindAndAheadForegroundColor\]$branchstring"
-    elif [ $behindBy -gt 0 ]; then
+    elif (( $behindBy > 0 )); then
         gitstring+="\[$BranchBehindBackgroundColor\]\[$BranchBehindForegroundColor\]$branchstring"
-    elif [ $aheadBy -gt 0 ]; then
+    elif (( $aheadBy > 0 )); then
         gitstring+="\[$BranchAheadBackgroundColor\]\[$BranchAheadForegroundColor\]$branchstring"
     else
         gitstring+="\[$BranchBackgroundColor\]\[$BranchForegroundColor\]$branchstring"
@@ -337,29 +370,25 @@ __git_ps1 ()
     local workingCount="$(( $filesAdded + $filesModified + $filesDeleted + $filesUnmerged ))"
     # index status
     if $EnableFileStatus; then
-        if [ $indexCount -ne 0 ] || $ShowStatusWhenZero; then
+        if (( $indexCount != 0 )) || $ShowStatusWhenZero; then
             gitstring+="\[$IndexBackgroundColor\]\[$IndexForegroundColor\] +$indexAdded ~$indexModified -$indexDeleted"
         fi
-        if [ $indexUnmerged -ne 0 ]; then
+        if (( $indexUnmerged != 0 )); then
             gitstring+=" \[$IndexBackgroundColor\]\[$IndexForegroundColor\]!$indexUnmerged"
         fi
-        if [ $indexCount -ne 0 ] && ([ $workingCount -ne 0 ] || $ShowStatusWhenZero); then
+        if (( $indexCount != 0 && ($workingCount != 0 || $ShowStatusWhenZero) )); then
             gitstring+="\[$DelimBackgroundColor\]\[$DelimForegroundColor\]$DelimText"
         fi
     fi
-    if [ $EnableFileStatus ]; then
-        if [ $workingCount -ne 0 ] || $ShowStatusWhenZero; then
+    if $EnableFileStatus; then
+        if (( $workingCount != 0 )) || $ShowStatusWhenZero; then
             gitstring+="\[$WorkingBackgroundColor\]\[$WorkingForegroundColor\] +$filesAdded ~$filesModified -$filesDeleted"
         fi
-        if [ $filesUnmerged -ne 0 ]; then
+        if (( $filesUnmerged != 0 )); then
             gitstring+=" \[$WorkingBackgroundColor\]\[$WorkingForegroundColor\]!$filesUnmerged"
         fi
     fi
-    # if [ $filesAdded -ne 0 ]; then
-    #     gitstring+="\[$UntrackedBackgroundColor\]\[$UntrackedForegroundColor\]$UntrackedText"
-    # fi
     gitstring+=${rebase:+'\[\e[0m\]'$rebase}
-
 
     # after-branch text
     gitstring+="\[$AfterBackgroundColor\]\[$AfterForegroundColor\]$AfterText"
@@ -373,8 +402,6 @@ __git_ps1 ()
     else
         printf -- "$printf_format" "$gitstring"
     fi
-    aheadBy="$aheadBy_"
-    behindBy="$behindBy_"
 }
 
 __gitdir ()
@@ -399,12 +426,13 @@ __gitdir ()
     fi
 }
 
-# used by GIT_PS1_SHOWUPSTREAM
+# Updates the global variables `aheadBy` and `behindBy`
 __git_ps1_show_upstream ()
 {
     local key value
     local svn_remote svn_url_pattern n
-    local upstream=git legacy=""
+    local upstream=git          # default
+    legacy=""
 
     svn_remote=()
     # get some config options from git-config
@@ -441,7 +469,7 @@ __git_ps1_show_upstream ()
         # (git-svn uses essentially the same procedure internally)
         local svn_upstream=($(git log --first-parent -1 \
                     --grep="^git-svn-id: \(${svn_url_pattern#??}\)" 2>/dev/null))
-        if [[ 0 -ne ${#svn_upstream[@]} ]]; then
+        if (( 0 != ${#svn_upstream[@]} )); then
             svn_upstream=${svn_upstream[ ${#svn_upstream[@]} - 2 ]}
             svn_upstream=${svn_upstream%@*}
             local n_stop="${#svn_remote[@]}"
@@ -461,6 +489,8 @@ __git_ps1_show_upstream ()
         ;;
     esac
 
+    aheadBy=0
+    behindBy=0
     # Find how many commits we are ahead/behind our upstream
     if [ -z "$legacy" ]; then
         IFS=$' \t\n' read -r behindBy aheadBy <<< "`git rev-list --count --left-right $upstream...HEAD 2>/dev/null`"
@@ -473,9 +503,8 @@ __git_ps1_show_upstream ()
             esac
         done <<< "`git rev-list --left-right $upstream...HEAD 2>/dev/null`"
     fi
-
-    echo ${behindBy:=0} >/dev/null
-    echo ${aheadBy:=0} >/dev/null
+    : ${aheadBy:=0}
+    : ${behindBy:=0}
 }
 
 write_prompt() {

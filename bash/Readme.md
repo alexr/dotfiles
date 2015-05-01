@@ -8,7 +8,5 @@ I wanted to at least partially understand what I have in mine, and so it mostly 
 
 Awesome `z.sh` is from https://github.com/rupa/z/commits/master, unchanged.
 
-And the `.git-prompt.sh` is from https://github.com/lyze/posh-git-sh, with slight modification in color definitions (`echo -e "\033[1;33mColorized"` works, while `echo -e "\e[1;33mColor"` doesn't).
-
-There is also [git-completion.bash](https://github.com/git/git/blob/master/contrib/completion/git-completion.bash), which together with git-prompt gives comparable experience to [posh-git](https://github.com/dahlbyk/posh-git), that I had to have in bash.
+There is also [git-completion.bash](https://github.com/git/git/blob/master/contrib/completion/git-completion.bash), which together with [git-prompt.sh](https://github.com/lyze/posh-git-sh/blob/master/git-prompt.sh) gives comparable experience to [posh-git](https://github.com/dahlbyk/posh-git), that I had to have in bash.
 

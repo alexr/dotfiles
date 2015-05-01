@@ -46,7 +46,7 @@ PATH=$PATH:/usr/local/smlnj-110.75/bin
 PATH=$PATH:$HOME/Library/Haskell/bin
 export PATH
 
-# Load ~bash_prompt, ~/.aliases, ~/.functions, ~/.git-prompt.sh, ~/.git-completion.bash, ~/z.sh,
+# Load ~bash_prompt, ~/.aliases, ~/.functions, ~/.git-prompt.sh, ~/.git-completion.bash, ~/.z.sh,
 for file in ~/.{functions,git-prompt.sh,git-completion.bash,z.sh,aliases,bash_prompt}; do
     [ -r "$file" ] && source "$file"
 done
