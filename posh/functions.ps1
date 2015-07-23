@@ -146,6 +146,15 @@ function which([string]$name)
     }
 }
 
+function FromBase64([string]$str)
+{
+    [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($str))
+}
+
+function ToBase64([string]$str)
+{
+    [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($str))
+}
 
 # Print all the console colors with names.
 function Test-Colors {
