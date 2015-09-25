@@ -18,7 +18,7 @@ function TFTabExpansion($lastBlock) {
     }
 }
 
-$PowerTab_RegisterTabExpansion = Get-Command Register-TabExpansion -Module powertab -ErrorAction SilentlyContinue
+$PowerTab_RegisterTabExpansion = if (Get-Module -Name powertab) { Get-Command Register-TabExpansion -Module powertab -ErrorAction SilentlyContinue }
 if ($PowerTab_RegisterTabExpansion)
 {
     & $PowerTab_RegisterTabExpansion "tf.exe" -Type Command {
