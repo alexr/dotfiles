@@ -185,6 +185,8 @@ if(Test-Path ~\AppData\Local\GitHub) {
     git config --global color.diff.old "red bold"
     git config --global color.diff.frag "cyan bold"
     git config --global color.diff.whitespace "yellow reverse"
+    git config --global color.branch.remote "blue bold"
+    git config --global color.branch.upstream "white bold"
 
     # Graphical history aliases
     git config --global alias.l "log --graph --pretty='%C(black bold)%h%Creset -%C(yellow dim reverse)%d%Creset %s %C(cyan bold)[%an]%Creset %C(green bold)(%cr)%Creset' --abbrev-commit --date=relative"
