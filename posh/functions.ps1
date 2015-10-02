@@ -156,6 +156,11 @@ function ToBase64([string]$str)
     [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($str))
 }
 
+function XmlTimeSpan([string]$str)
+{
+    [System.Xml.XmlConvert]::ToTimeSpan($str).ToString()
+}
+
 # Print all the console colors with names.
 function Test-Colors {
     $colors = @('Black       ', 'DarkBlue    ', 'DarkGreen   ', 'DarkCyan    ',
