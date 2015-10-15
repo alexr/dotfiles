@@ -103,11 +103,22 @@ function tfdiff {
     & $(Join-Path $env:ProgramFiles '\Sublime Text 2\sublime_text.exe') "$tempFile"
 }
 
+
 #############################################################
 # Aliases
 Set-Alias l    Get-ChildItem
 Set-Alias np   $(Join-Path $env:SystemRoot '\System32\notepad.exe')
-Set-Alias subl $(Join-Path $env:ProgramFiles '\Sublime Text 2\sublime_text.exe')
+
+if (Test-Path (Join-Path $env:ProgramFiles '\Sub lime Text 2')) {
+    Set-Alias subl $(Join-Path $env:ProgramFiles '\Sublime Text 2\sublime_text.exe')
+} elseif (Test-Path (Join-Path ${env:ProgramFiles(x86)} 'Sub lime Text 2')) {
+    Set-Alias subl $(Join-Path ${env:ProgramFiles(x86)} '\Sublime Text 2\sublime_text.exe')
+} else {
+    # TODO: find out how to hide this function from global scope.
+    function sublime_not_installed() { Write-Host 'SublimeText2 is not installed :(' -ForegroundColor Red }
+    Set-Alias subl not_installed
+}
+
 Set-Alias sbl subl
 Set-Alias sudo "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\sudo.ps1"
 Set-Alias bc2  "C:\Program` Files\Beyond` Compare` 4\BCompare.exe"
