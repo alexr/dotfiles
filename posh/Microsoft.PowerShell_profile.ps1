@@ -109,19 +109,34 @@ function tfdiff {
 Set-Alias l    Get-ChildItem
 Set-Alias np   $(Join-Path $env:SystemRoot '\System32\notepad.exe')
 
-if (Test-Path (Join-Path $env:ProgramFiles '\Sub lime Text 2')) {
+# Figure out where SublimeText is installed and create proper alias
+if (Test-Path (Join-Path $env:ProgramFiles '\Sublime Text 2')) {
     Set-Alias subl $(Join-Path $env:ProgramFiles '\Sublime Text 2\sublime_text.exe')
-} elseif (Test-Path (Join-Path ${env:ProgramFiles(x86)} 'Sub lime Text 2')) {
+} elseif (Test-Path (Join-Path ${env:ProgramFiles(x86)} 'Sublime Text 2')) {
     Set-Alias subl $(Join-Path ${env:ProgramFiles(x86)} '\Sublime Text 2\sublime_text.exe')
 } else {
     # TODO: find out how to hide this function from global scope.
     function sublime_not_installed() { Write-Host 'SublimeText2 is not installed :(' -ForegroundColor Red }
-    Set-Alias subl not_installed
+    Set-Alias subl sublime_not_installed
 }
 
 Set-Alias sbl subl
 Set-Alias sudo "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\sudo.ps1"
-Set-Alias bc2  "C:\Program` Files\Beyond` Compare` 4\BCompare.exe"
+
+# Figure out where Beyond Compare is installed and create proper alias
+if (Test-Path (Join-Path $env:ProgramFiles '\Beyond Compare 4')) {
+    Set-Alias bc2 $(Join-Path $env:ProgramFiles '\Beyond Compare 4\BCompare.exe')
+} elseif (Test-Path (Join-Path ${env:ProgramFiles(x86)} 'Beyond Compare 4')) {
+    Set-Alias bc2 $(Join-Path ${env:ProgramFiles(x86)} '\Beyond Compare 4\BCompare.exe')
+} elseif (Test-Path 'C:\Users\Bin\BC4') {
+    Set-Alias bc2 'C:\Users\Bin\BC4\BCompare.exe'
+} else {
+    # TODO: find out how to hide this function from global scope.
+    function beyondcompare_not_installed() { Write-Host 'Beyond Compare 4 is not installed :(' -ForegroundColor Red }
+    Set-Alias bc2 beyondcompare_not_installed
+}
+Set-Alias bc3  bc2
+Set-Alias bc4  bc2
 
 # Have to use `pd` here to get these locations to flow through posz.
 function Push-Parent { $location = Get-Parent; if ($location) { pd $location } }
