@@ -1,3 +1,6 @@
+# Load Convert-Size
+. "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\Convert-Size.ps1"
+
 # Load custom functions
 . "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\functions.ps1"
 
@@ -170,6 +173,8 @@ function f($search, $path) { findstr /snip $search $path }
 function fs($search, $path) { findstr /snip /c:$search $path }
 function cmdvs32 { Start-VisualStudioEnvironment x86 }
 function cmdvs64 { Start-VisualStudioEnvironment x64 }
+Set-Alias du2 directory-summary
+function rcopy($from, $to) { robocopy $from $to /S /MT /Z }
 
 #############################################################
 # Ensure needed path's are indeed part of the path variable

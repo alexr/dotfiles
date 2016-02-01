@@ -101,9 +101,8 @@ function directory-summary {
             Get-ChildItem -r $_.FullName -ErrorAction SilentlyContinue |
             Where-Object -Property Length |
             Measure-Object -Property Length -Sum |
-            Select-Object @{Name="Name";Expression={$f}}, Sum }
+            Select-Object @{Name="Name";Expression={$f}}, @{Name="Sum";Expression={(Convert-Size $_.Sum)}} }
 }
-
 
 # A hack to kill bitlocker popup };^)
 # -m will monitor bitlocker UI in a loop.
