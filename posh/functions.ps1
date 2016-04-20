@@ -160,6 +160,11 @@ function XmlTimeSpan([string]$str)
     [System.Xml.XmlConvert]::ToTimeSpan($str).ToString()
 }
 
+function Set-WindowTitle([string]$str)
+{
+    $Host.UI.RawUI.WindowTitle = $str
+}
+
 # Print all the console colors with names.
 function Test-Colors {
     $colors = @('Black       ', 'DarkBlue    ', 'DarkGreen   ', 'DarkCyan    ',

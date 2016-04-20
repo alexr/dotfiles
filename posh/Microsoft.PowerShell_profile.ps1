@@ -168,6 +168,7 @@ function Push-GreatGrandParent { $location = Get-GreatGrandParent; if ($location
 Set-Alias ..   Push-Parent
 Set-Alias ...  Push-GrandParent
 Set-Alias .... Push-GreatGrandParent
+Set-Alias title Set-WindowTitle
 
 Set-Alias \\   Push-ContextRoot
 Set-Alias whereis $(Join-Path $env:SystemRoot '\System32\where.exe')
