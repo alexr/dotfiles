@@ -133,6 +133,30 @@ function tfdiff {
     & (Get-Sublime-Path) "$tempFile"
 }
 
+# Based on [this](http://stackoverflow.com/a/33013110) StackOverflow answer.
+function Enable-FusionLog() {
+    param ( $LogPath = "G:\FusionLog" )
+
+    # These commands need to run as-admin, thus wrapping in sudo.
+    sudo powershell -NoProfile -Command "& {
+        Set-ItemProperty -Path HKLM:\Software\Microsoft\Fusion -Name ForceLog         -Value 1        -Type DWord
+        Set-ItemProperty -Path HKLM:\Software\Microsoft\Fusion -Name LogFailures      -Value 1        -Type DWord
+        Set-ItemProperty -Path HKLM:\Software\Microsoft\Fusion -Name LogResourceBinds -Value 1        -Type DWord
+        Set-ItemProperty -Path HKLM:\Software\Microsoft\Fusion -Name LogPath          -Value $LogPath -Type String
+    }"
+}
+
+function Disable-FusionLog() {
+
+    # These commands need to run as-admin, thus wrapping into sudo.
+    sudo powershell -NoProfile -Command "& {
+        Remove-ItemProperty -Path HKLM:\Software\Microsoft\Fusion -Name ForceLog
+        Remove-ItemProperty -Path HKLM:\Software\Microsoft\Fusion -Name LogFailures
+        Remove-ItemProperty -Path HKLM:\Software\Microsoft\Fusion -Name LogResourceBinds
+        Remove-ItemProperty -Path HKLM:\Software\Microsoft\Fusion -Name LogPath
+    }"
+}
+
 
 #############################################################
 # Aliases
