@@ -23,6 +23,9 @@ function Push-ContextRoot {
     if(Test-Path Env:\CBT_PS_ARGS) {
         # CBT env...
         Push-Location(Get-Content Env:\ENLISTMENT_ROOT)
+    } elseif (Test-Path Env:\BASEDIR) {
+        # CoreXT env...
+        Push-Location(Get-Content Env:\BASEDIR)
     } else {
         # Git env...
         $Location = Get-AncestorItem '.git' Container
@@ -78,6 +81,42 @@ function Start-CBT {
     Remove-Item Env:\saved_CBT_SHELL -ErrorAction Ignore
 
     "Exited CBT."
+}
+
+function Start-CoreXT {
+    param ( [string]$Path )
+
+    # Default path to current location
+    if (-not $Path) {
+        $Path = $Pwd.Path
+    } else {
+        $path2 = Resolve-Path $Path -ErrorAction SilentlyContinue
+        if ($path2 -eq $null) {
+            Write-Host "Error $Path is not valid!" -ForegroundColor Red
+            return
+        }
+        $Path = $path2
+    }
+
+    # Find real root if any
+    $Root = Get-AncestorItem -ItemName '.corext' -ItemKind Container -SearchPath $Path
+    if($Root -eq $null) {
+        Write-Host "Error $Path is not CoreXT subtree!" -ForegroundColor Red
+        return
+    }
+
+    if($env:NugetMachineInstallRoot -eq $null) {
+        Write-Host "Error `$env:NugetMachineInstallRoot is not set. It must be set as sustem variable!" -ForegroundColor Red
+        return
+    }
+
+    Write-Host "Nuget location is set to $env:NugetMachineInstallRoot" -ForegroundColor Green
+    Push-Location $Root
+
+    sudo powershell -noexit tools\path1st\myenv.ps1 $Root 'cosmos'
+
+    Pop-Location
+    "Exited CoreXT."
 }
 
 # Figures out where SublimeText is installed and returns path to it
@@ -297,6 +336,11 @@ function global:prompt {
     # If CODEBOXPROJECT is set then we are in the Codebox env...
     if (Test-Path Env:\CODEBOXPROJECT) {
         Write-Host("¦CodeBox¦ ") -ForegroundColor DarkGray -nonewline
+    }
+
+    # If BASEDIR is set then we are in the CoreXT env...
+    if(Test-Path 'Env:\BASEDIR') {
+        Write-Host("¦CrXT¦ ") -ForegroundColor DarkGray -nonewline
     }
 
     Write-VcsStatus
