@@ -160,6 +160,11 @@ function XmlTimeSpan([string]$str)
     [System.Xml.XmlConvert]::ToTimeSpan($str).ToString()
 }
 
+function FromTicks([long]$ticks)
+{
+    (New-Object datetime $ticks).ToString("o")
+}
+
 function Set-WindowTitle([string]$str)
 {
     $Host.UI.RawUI.WindowTitle = $str
