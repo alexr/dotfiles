@@ -308,6 +308,12 @@ if(Test-Path ~\AppData\Local\GitHub) {
     git config --global alias.l "log --pretty='%C(black bold)%h%Creset -%C(yellow dim reverse)%d%Creset %s %C(cyan bold)[%an]%Creset %C(green bold)(%cr)%Creset'"
     git config --global alias.lg "log --graph --pretty='%C(black bold)%h%Creset -%C(yellow dim reverse)%d%Creset %s %C(cyan bold)[%an]%Creset %C(green bold)(%cr)%Creset' --abbrev-commit --date=relative"
     git config --global alias.lga "!git lg --all"
+    git config --global core.editor ("`"'" + (Get-Sublime-Path) + "' -w $*`"")
+    git config --global diff.tool "bc3"
+    git config --global merge.tool "bc3"
+
+    # Prevent Git from leaving around *.orig files after merges
+    git config --global mergetool.keepBackup false
 
     $global:TFPromptSettings.ChangesForegroundColor=[ConsoleColor]::Green
     $global:TFPromptSettings.DetectedForegroundColor=[ConsoleColor]::Blue
