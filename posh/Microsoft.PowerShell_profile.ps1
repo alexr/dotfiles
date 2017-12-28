@@ -125,6 +125,10 @@ function Get-Sublime-Path {
         return $(Join-Path $env:ProgramFiles '\Sublime Text 2\sublime_text.exe')
     } elseif (Test-Path (Join-Path ${env:ProgramFiles(x86)} 'Sublime Text 2')) {
         return $(Join-Path ${env:ProgramFiles(x86)} '\Sublime Text 2\sublime_text.exe')
+    } elseif (Test-Path (Join-Path $env:ProgramFiles '\Sublime Text 3')) {
+        return $(Join-Path $env:ProgramFiles '\Sublime Text 3\sublime_text.exe')
+    } elseif (Test-Path (Join-Path ${env:ProgramFiles(x86)} 'Sublime Text 3')) {
+        return $(Join-Path ${env:ProgramFiles(x86)} '\Sublime Text 3\sublime_text.exe')
     } else {
         return $null
     }
@@ -287,7 +291,11 @@ if(Test-Path ~\AppData\Local\GitHub) {
     . (".\CheckVersion.ps1")
 
     Pop-Location
+} else {
+    Import-Module posh-git
+}
 
+if (git --version) {
     # Modify prompt and git colors to fit more the zenburn scheme.
     # as described in http://sedodream.com/2012/05/05/GitCustomizingColorsForWindowsIncludingPoshgit.aspx
     $global:GitPromptSettings.WorkingForegroundColor=[ConsoleColor]::Blue
@@ -315,8 +323,8 @@ if(Test-Path ~\AppData\Local\GitHub) {
     # Prevent Git from leaving around *.orig files after merges
     git config --global mergetool.keepBackup false
 
-    $global:TFPromptSettings.ChangesForegroundColor=[ConsoleColor]::Green
-    $global:TFPromptSettings.DetectedForegroundColor=[ConsoleColor]::Blue
+#    $global:TFPromptSettings.ChangesForegroundColor=[ConsoleColor]::Green
+#    $global:TFPromptSettings.DetectedForegroundColor=[ConsoleColor]::Blue
 }
 
 # Modifying prompt function to include CBT and CodeBox
@@ -325,9 +333,6 @@ function global:prompt {
     $realLASTEXITCODE = $LASTEXITCODE
 
     Write-Host $(Get-Date -Format "hh:mm:ss ") -ForegroundColor Cyan -nonewline
-
-    # Reset color, which can be messed up by Enable-GitColors
-    $Host.UI.RawUI.ForegroundColor = $GitPromptSettings.DefaultForegroundColor
 
     Write-Host($pwd.ProviderPath) -nonewline
 
